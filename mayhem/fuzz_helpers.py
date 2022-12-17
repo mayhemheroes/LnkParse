@@ -123,24 +123,29 @@ class EnhancedFuzzedDataProvider(atheris.FuzzedDataProvider):
     def ConsumeRandomString(self) -> str:
         return self.ConsumeUnicodeNoSurrogates(self.ConsumeIntInRange(0, self.remaining_bytes()))
 
-    @contextlib.contextmanager
-    def ConsumeMemoryBytesFile(self, all_data: bool = False) -> io.BytesIO:
-        file = io.BytesIO(self.ConsumeBytes(self.remaining_bytes()) if all_data else self.ConsumeRandomBytes())
-        yield file
-        file.close()
+    def ConsumeRemainingString(self) -> str:
+        return self.ConsumeUnicodeNoSurrogates(self.remaining_bytes())
+
+    def ConsumeRemainingBytes(self) -> bytes:
+        return self.ConsumeBytes(self.remaining_bytes())
 
     @contextlib.contextmanager
-    def ConsumeMemoryStringFile(self, all_data: bool = False) -> io.StringIO:
-        file = io.StringIO(self.ConsumeUnicodeNoSurrogates(self.remaining_bytes()) if all_data else self.ConsumeRandomString())
-        yield file
-        file.close()
-
-    @contextlib.contextmanager
-    def ConsumeTemporaryFile(self, suffix: str, all_data: bool = False, bytes: bool = True) -> io.StringIO:
+    def ConsumeMemoryFile(self, all_data: bool = False, as_bytes: bool = True) -> io.BytesIO:
         if all_data:
-            file_data = self.ConsumeBytes(self.remaining_bytes()) if bytes else self.ConsumeUnicodeNoSurrogates(self.remaining_bytes())
+            file_data = self.ConsumeRemainingBytes() if as_bytes else self.ConsumeRemainingString()
         else:
-            file_data = self.ConsumeRandomBytes() if bytes else self.ConsumeRandomString()
+            file_data = self.ConsumeRandomBytes() if as_bytes else self.ConsumeRandomString()
+
+        file = io.BytesIO(file_data) if as_bytes else io.StringIO(file_data)
+        yield file
+        file.close()
+
+    @contextlib.contextmanager
+    def ConsumeTemporaryFile(self, suffix: str, all_data: bool = False, as_bytes: bool = True) -> io.StringIO:
+        if all_data:
+            file_data = self.ConsumeRandomBytes() if as_bytes else self.ConsumeRemainingString()
+        else:
+            file_data = self.ConsumeRandomBytes() if as_bytes else self.ConsumeRandomString()
         tfile = tempfile.TemporaryFile(suffix=suffix)
         tfile.write(file_data)
         tfile.seek(0)
