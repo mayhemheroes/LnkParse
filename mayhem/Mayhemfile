@@ -1,4 +1,4 @@
-project: lnkfile
+project: LnkParse
 target: lnkfile-parse
 testsuite:
     - file://mayhem/testsuite
