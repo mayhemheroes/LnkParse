@@ -25,7 +25,7 @@ def TestOneInput(data):
             with fdp.ConsumeMemoryFile(all_data=True, as_bytes=True) as f, nostdout():
                 lnkfile.lnk_file(f)
         except KeyError as e:
-            if random.random() > 0.999:
+            if random.random() > 0.99:
                 raise e
 def main():
     atheris.Setup(sys.argv, TestOneInput)

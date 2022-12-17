@@ -6,4 +6,4 @@ testsuite:
 cmds:
   - cmd: /src/mayhem/fuzz_lnkfile.py
     libfuzzer: true
-    timeout: 12
+    timeout: 30
