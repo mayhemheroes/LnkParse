@@ -6,7 +6,7 @@ import fuzz_helpers
 import io
 from contextlib import contextmanager
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(include=["lnkfile"]):
     import lnkfile
 
 @contextmanager
@@ -21,7 +21,7 @@ def nostdout():
 def TestOneInput(data):
         fdp = fuzz_helpers.EnhancedFuzzedDataProvider(data)
         try:
-            with fdp.ConsumeMemoryBytesFile(all_data=True) as f, nostdout():
+            with fdp.ConsumeMemoryFile(all_data=True, as_bytes=True) as f, nostdout():
                 lnkfile.lnk_file(f)
         except KeyError:
             return -1
