@@ -5,6 +5,7 @@ import sys
 import fuzz_helpers
 import io
 from contextlib import contextmanager
+import random
 
 with atheris.instrument_imports(include=["lnkfile"]):
     import lnkfile
@@ -23,9 +24,9 @@ def TestOneInput(data):
         try:
             with fdp.ConsumeMemoryFile(all_data=True, as_bytes=True) as f, nostdout():
                 lnkfile.lnk_file(f)
-        except KeyError:
-            return -1
-
+        except KeyError as e:
+            if random.random() > 0.999:
+                raise e
 def main():
     atheris.Setup(sys.argv, TestOneInput)
     atheris.Fuzz()
