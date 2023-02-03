@@ -1,0 +1,9 @@
+project: LnkParse
+target: lnkfile-parse
+testsuite:
+    - file://mayhem/testsuite
+
+cmds:
+  - cmd: /src/mayhem/fuzz_lnkfile.py
+    libfuzzer: true
+    timeout: 30
